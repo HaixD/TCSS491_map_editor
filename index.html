@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Map Editor</title>
+        <link rel="stylesheet" href="./src/styles/global.css" />
+        <link rel="stylesheet" href="./src/styles/gui.css" />
+    </head>
+    <body>
+        <!-- Game Engine Types -->
+        <script type="text/javascript" src="./src/engine/util.js"></script>
+        <script type="text/javascript" src="./src/engine/types/vector.js"></script>
+        <script type="text/javascript" src="./src/engine/types/instance-vector.js"></script>
+        <script type="text/javascript" src="./src/engine/types/boundary.js"></script>
+        <script type="text/javascript" src="./src/engine/types/input-events.js"></script>
+        <script type="text/javascript" src="./src/engine/types/game-object.js"></script>
+        <script type="text/javascript" src="./src/engine/types/scene.js"></script>
+        <script type="text/javascript" src="./src/engine/types/spritesheet.js"></script>
+
+        <!-- Game Engine -->
+        <script type="text/javascript" src="./src/engine/gameengine.js"></script>
+        <script type="text/javascript" src="./src/engine/assetmanager.js"></script>
+
+        <!-- Components -->
+        <script type="text/javascript" src="./src/engine/components/point.js"></script>
+        <script type="text/javascript" src="./src/engine/components/sprite.js"></script>
+        <script type="text/javascript" src="./src/engine/components/collider-rect.js"></script>
+        <script type="text/javascript" src="./src/engine/components/physics-entity.js"></script>
+        <script
+            type="text/javascript"
+            src="./src/engine/components/falling-player-controller.js"
+        ></script>
+
+        <!-- Game Content -->
+        <script type="text/javascript" src="./src/game-objects/tile.js"></script>
+        <script type="text/javascript" src="./src/game-objects/chunk.js"></script>
+        <script type="text/javascript" src="./src/gui.js"></script>
+        <script type="text/javascript" src="./src/game-objects/grid-ui.js"></script>
+        <script type="text/javascript" src="./src/game-objects/user.js"></script>
+        <script type="text/javascript" src="./src/game-map.js"></script>
+        <script type="text/javascript" src="./src/map-export.js"></script>
+
+        <div class="overlap-container">
+            <canvas
+                id="gameWorld"
+                width="1920"
+                height="1080"
+                style="background: white; grid-area: overlap"
+                tabindex="0"
+                autofocus
+            >
+            </canvas>
+            <div class="overlap-item" id="gui-container">
+                <div id="toolbar">
+                    <div>
+                        <h1>Tiles</h1>
+                        <div id="tiles" class="tool-group">
+                            <div class="tool-toggle" onclick="GUI.selectTile(this, Tile.DIRT)">
+                                <img src="images/dirt.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.DIRT_STAIR_BL)"
+                            >
+                                <img src="images/dirt_stair_BL.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.DIRT_STAIR_BR)"
+                            >
+                                <img src="images/dirt_stair_BR.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.DIRT_STAIR_TL)"
+                            >
+                                <img src="images/dirt_stair_TL.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.DIRT_STAIR_TR)"
+                            >
+                                <img src="images/dirt_stair_TR.png" />
+                            </div>
+                            <div class="tool-toggle" onclick="GUI.selectTile(this, Tile.AIR)">
+                                Air
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <h1>Objects</h1>
+                        <div id="objects" class="tool-group">
+                            <div class="tool-toggle" onclick="GUI.selectTile(this, Tile.PLAYER)">
+                                <img src="images/player.png" />
+                            </div>
+                            <div class="tool-toggle" onclick="GUI.selectTile(this, Tile.SLASHER)">
+                                <img src="images/slasher.png" />
+                            </div>
+                            <div class="tool-toggle" onclick="GUI.selectTile(this, Tile.SHOOTER)">
+                                <img src="images/placeholder.png" />
+                            </div>
+                            <div class="tool-toggle" onclick="GUI.selectTile(this, Tile.BLOCKER)">
+                                <img src="images/placeholder.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.SHOOT_PICKUP)"
+                            >
+                                <img src="images/shoot_pickup.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.SLASH_PICKUP)"
+                            >
+                                <img src="images/placeholder.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.TELEPORT_PICKUP)"
+                            >
+                                <img src="images/placeholder.png" />
+                            </div>
+                            <div
+                                class="tool-toggle"
+                                onclick="GUI.selectTile(this, Tile.HEALTH_PICKUP)"
+                            >
+                                <img src="images/placeholder.png" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <h1>Tools</h1>
+                        <div id="tools" class="tool-group">
+                            <div class="tool-toggle">Fill (NA)</div>
+                            <div class="tool-toggle">Rect (NA)</div>
+                            <div class="tool-toggle">Line (NA)</div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <h1>Checklist</h1>
+                        <div id="checklist">
+                            <div>
+                                <input type="checkbox" name="has-player" disabled />
+                                <label for="has-player">Has Player (NA)</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="has-player" disabled />
+                                <label for="has-player">Has Finish (NA)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <h1>Export</h1>
+                        <div id="export" class="tool-group">
+                            <div id="download-json" class="tool-button" onclick="GUI.saveMap()">
+                                Download (.json)
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <h1>Import</h1>
+                        <div id="import" class="tool-group">
+                            <div id="import-input" class="tool-button">
+                                <label for="import-json">Import (.json)</label>
+                                <input
+                                    id="import-json"
+                                    class="tool-button"
+                                    type="file"
+                                    accept="application/json"
+                                    onchange="GUI.loadMap()"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script type="text/javascript" src="./src/main.js"></script>
+</html>

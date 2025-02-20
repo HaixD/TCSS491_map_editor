@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0.5rem;
+}
+
+hr {
+    border-top: 1px solid #444444;
+    border-bottom: none;
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #21143d;
+    margin: 0;
+    gap: 20px;
+    overflow: hidden;
+}
+
+.overlap-container {
+    display: grid;
+    grid-template-areas: "overlap";
+    contain: paint;
+
+    & > .overlap-item {
+        grid-area: overlap;
+    }
+}
