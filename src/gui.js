@@ -66,6 +66,7 @@ class GUI {
             imageElement.onerror = () => {
                 container.removeChild(imageElement);
                 container.appendChild(document.createTextNode(name));
+                Tile.setImageSrc(value, undefined);
             };
 
             Tile.setImageSrc(value, imageSrc);

@@ -40,50 +40,30 @@ class Tile {
      * @param {Vector} position
      */
     static drawTile(tile, ctx, position) {
-        const blockArgs = [position.x, position.y, 48, 48];
         const normalShape = new Vector(Tile.SIZE, Tile.SIZE);
         const largeShape = normalShape.multiply(2);
 
         switch (tile) {
+            // HIDDEN TILES
+            case Tile.AIR:
+                break;
+            // 2x2 TILES
             case Tile.PLAYER:
-                Tile.#drawImage(ctx, position, largeShape, tile);
-                break;
             case Tile.SLASHER:
-                Tile.#drawImage(ctx, position, largeShape, tile);
-                break;
-
             case Tile.SHOOTER:
                 Tile.#drawImage(ctx, position, largeShape, tile);
                 break;
-            case Tile.BLOCKER:
+            // UNIQUE TILES
+            case Tile.BLOCKER: // SPECIAL SIZE
                 Tile.#drawImage(ctx, position, new Vector(48, 96), tile);
                 break;
-            case Tile.SHOOT_PICKUP:
-            case Tile.SLASH_PICKUP:
+            case Tile.SLASH_PICKUP: // PLACEHOLDER IMAGE TILES
             case Tile.TELEPORT_PICKUP:
                 Tile.#drawImage(ctx, position, normalShape, "images/shoot_pickup.png");
                 break;
-            case Tile.HEALTH_PICKUP:
-                Tile.#drawImage(ctx, position, normalShape, tile);
-            case Tile.AIR:
-                break;
-            case Tile.DIRT:
-                Tile.#drawImage(ctx, position, normalShape, tile);
-                break;
-            case Tile.DIRT_STAIR_BL:
-                Tile.#drawImage(ctx, position, normalShape, tile);
-                break;
-            case Tile.DIRT_STAIR_BR:
-                Tile.#drawImage(ctx, position, normalShape, tile);
-                break;
-            case Tile.DIRT_STAIR_TL:
-                Tile.#drawImage(ctx, position, normalShape, tile);
-                break;
-            case Tile.DIRT_STAIR_TR:
-                Tile.#drawImage(ctx, position, normalShape, tile);
-                break;
+            // 1x1 TILES
             default:
-                throw new Error(`Received unrecognized tile: ${tile}`);
+                Tile.#drawImage(ctx, position, normalShape, tile);
         }
     }
 
@@ -96,13 +76,14 @@ class Tile {
     static #drawImage(ctx, position, shape, src) {
         const imageSrc = typeof src === "number" ? Tile.#TileImages[src] : src;
         if (imageSrc === undefined) {
+            ctx.fillRect(position.x, position.y, shape.x, shape.y);
             return;
         }
 
         const image = AssetManager.getImage(imageSrc);
         if ("then" in image) {
             image.then(value => {
-                value.onload = Tile.#drawImage(imageSrc);
+                value.onload = () => Tile.#drawImage(ctx, position, shape, imageSrc);
             });
             return;
         }
