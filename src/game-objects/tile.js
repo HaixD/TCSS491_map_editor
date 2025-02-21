@@ -22,6 +22,8 @@ class Tile {
     static DIRT_STAIR_TL = 4;
     static DIRT_STAIR_TR = 5;
 
+    static END_PICKUP = 100;
+
     constructor() {
         throw new Error("Tile is a static class and should not have any instances");
     }

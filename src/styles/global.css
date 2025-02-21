@@ -33,6 +33,7 @@ body {
     display: grid;
     grid-template-areas: "overlap";
     contain: paint;
+    max-width: 100%;
 
     & > .overlap-item {
         grid-area: overlap;
