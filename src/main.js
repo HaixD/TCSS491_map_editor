@@ -4,17 +4,26 @@
 /** @typedef {import("./game-objects/user")} */
 
 async function main() {
+    for (const [key, value] of Object.entries(Tile)) {
+        if (key === "SIZE") continue;
+
+        if (value > 0) {
+            GUI.addToolOption("tile", {
+                name: key.slice(0, 3),
+                value,
+                imageSrc: `images/${key.toLowerCase()}.png`,
+            });
+        } else if (value < 0) {
+            GUI.addToolOption("object", {
+                name: key.slice(0, 3),
+                value,
+                imageSrc: `images/${key.toLowerCase()}.png`,
+            });
+        }
+    }
+    GUI.addToolOption("tile", { name: "AIR", value: 0 });
+
     document.querySelector("#tiles > *:first-child").onclick();
-
-    await AssetManager.getImage("images/player.png");
-    await AssetManager.getImage("images/slasher.png");
-    await AssetManager.getImage("images/shoot_pickup.png");
-
-    await AssetManager.getImage("images/dirt.png");
-    await AssetManager.getImage("images/dirt_stair_BL.png");
-    await AssetManager.getImage("images/dirt_stair_BR.png");
-    await AssetManager.getImage("images/dirt_stair_TL.png");
-    await AssetManager.getImage("images/dirt_stair_TR.png");
 
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("gameWorld");

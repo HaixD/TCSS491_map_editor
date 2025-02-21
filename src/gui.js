@@ -1,4 +1,3 @@
-/** @typedef {import("./game-objects/tile")} */
 /** @typedef {import("./game-map")} */
 
 class GUI {
@@ -45,5 +44,35 @@ class GUI {
         element.files[0].text().then(json => {
             GameMap.import(JSON.parse(json));
         });
+    }
+
+    /**
+     * @param {"tile" | "object"} type
+     * @param {{name: string, value: number, imageSrc: string | undefined}}
+     */
+    static addToolOption(type, { name, value, imageSrc }) {
+        const tiles = document.getElementById(`${type}s`);
+
+        const tree = document.createDocumentFragment();
+        const container = document.createElement("div");
+        container.setAttribute("class", "tool-toggle");
+        container.onclick = () => GUI.selectTile(container, value);
+        if (imageSrc === undefined) {
+            container.appendChild(document.createTextNode(name));
+        } else {
+            const imageElement = new Image(1, 1);
+            imageElement.src = imageSrc;
+            imageElement.alt = name;
+            imageElement.onerror = () => {
+                container.removeChild(imageElement);
+                container.appendChild(document.createTextNode(name));
+            };
+
+            Tile.setImageSrc(value, imageSrc);
+            container.appendChild(imageElement);
+        }
+
+        tree.appendChild(container);
+        tiles.appendChild(tree);
     }
 }
