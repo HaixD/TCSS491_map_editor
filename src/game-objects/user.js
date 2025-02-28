@@ -83,12 +83,12 @@ class User extends GameObject {
             // left down
             if (this.#firstLeftPosition === null) {
                 this.#firstLeftPosition = this.#mousePosition;
+                if (tool === User.TOOLS.FILL) {
+                    this.#fill();
+                }
             }
 
             switch (tool) {
-                case User.TOOLS.FILL:
-                    this.#fill();
-                    break;
                 case User.TOOLS.PEN:
                     this.#fillHighlightedTiles();
                     break;
