@@ -52,6 +52,7 @@ class User extends GameObject {
         super.update(deltaTime, events);
 
         const scene = GameEngine.getActiveScene();
+        const tool = GUI.getTool();
 
         // move
         this.#mousePosition = GridUI.toGridPosition(events.worldMousePosition).multiply(Tile.SIZE);
@@ -81,13 +82,19 @@ class User extends GameObject {
             if (this.#firstLeftPosition === null) {
                 this.#firstLeftPosition = this.#mousePosition;
             }
-            switch (GUI.getTool()) {
-                case User.TOOLS.PEN:
-                    GameMap.setTile(this.#mousePosition.x, this.#mousePosition.y, GUI.getTile());
-                    break;
+
+            if (tool === User.TOOLS.PEN) {
+                this.#fillHighlightedTiles();
             }
         } else {
             // left up
+            if (this.#firstLeftPosition !== null) {
+                switch (tool) {
+                    case User.TOOLS.RECT:
+                        this.#fillHighlightedTiles();
+                        break;
+                }
+            }
             this.#firstLeftPosition = null;
         }
 
@@ -116,6 +123,14 @@ class User extends GameObject {
         this.#drawHighlights(ctx);
 
         ctx.restore();
+    }
+
+    #fillHighlightedTiles() {
+        for (const [x, col] of Object.entries(this.#highlightedTiles)) {
+            for (const y of col) {
+                GameMap.setTile(Number(x), y, GUI.getTile());
+            }
+        }
     }
 
     #updateHighlightedTiles() {
