@@ -9,6 +9,7 @@ class User extends GameObject {
     static TOOLS = {
         PEN: 0,
         RECT: 1,
+        LINE: 2,
     };
 
     /** @type {Vector | null} */
@@ -88,12 +89,8 @@ class User extends GameObject {
             }
         } else {
             // left up
-            if (this.#firstLeftPosition !== null) {
-                switch (tool) {
-                    case User.TOOLS.RECT:
-                        this.#fillHighlightedTiles();
-                        break;
-                }
+            if (this.#firstLeftPosition !== null && tool !== User.TOOLS.PEN) {
+                this.#fillHighlightedTiles();
             }
             this.#firstLeftPosition = null;
         }
@@ -133,38 +130,78 @@ class User extends GameObject {
         }
     }
 
+    /**
+     * Uses the Bresenham's line algorithm.
+     *
+     * Note: code obtained from: https://stackoverflow.com/a/4672319/15187689;
+     */
+    #highlightLine() {
+        let { x: x0, y: y0 } = this.#firstLeftPosition.map(value => Math.round(value / Tile.SIZE));
+        let { x: x1, y: y1 } = this.#mousePosition.map(value => Math.round(value / Tile.SIZE));
+
+        const dx = Math.abs(x1 - x0); // change in X
+        const dy = Math.abs(y1 - y0); // change in Y
+        const sx = Math.sign(x1 - x0); // sign X
+        const sy = Math.sign(y1 - y0); // sign Y
+
+        let error = dx - dy;
+        while (true) {
+            this.#highlightTile(x0 * Tile.SIZE, y0 * Tile.SIZE);
+
+            if (x0 === x1 && y0 === y1) {
+                break;
+            }
+
+            const e2 = error * 2;
+            if (e2 > -dy) {
+                error -= dy;
+                x0 += sx;
+            }
+            if (e2 < dx) {
+                error += dx;
+                y0 += sy;
+            }
+        }
+    }
+
+    #highlightRect() {
+        const { left, right, top, bottom } = this.#getClickAndHoldBoundary();
+
+        for (let x = left; x <= right; x += Tile.SIZE) {
+            this.#highlightTile(x, top);
+            this.#highlightTile(x, bottom);
+        }
+        for (let y = top; y <= bottom; y += Tile.SIZE) {
+            this.#highlightTile(left, y);
+            this.#highlightTile(right, y);
+        }
+    }
+
+    #highlightTile(gridX, gridY) {
+        if (gridX in this.#highlightedTiles) {
+            this.#highlightedTiles[gridX].add(gridY);
+        } else {
+            this.#highlightedTiles[gridX] = new Set();
+            this.#highlightTile(gridX, gridY);
+        }
+    }
+
     #updateHighlightedTiles() {
         this.#highlightedTiles = {};
-        const highlightTile = (gridX, gridY) => {
-            if (gridX in this.#highlightedTiles) {
-                this.#highlightedTiles[gridX].add(gridY);
-            } else {
-                this.#highlightedTiles[gridX] = new Set();
-                highlightTile(gridX, gridY);
-            }
-        };
 
         switch (GUI.getTool()) {
             case User.TOOLS.RECT:
                 if (this.#firstLeftPosition !== null) {
-                    const left = Math.min(this.#firstLeftPosition.x, this.#mousePosition.x);
-                    const right = Math.max(this.#firstLeftPosition.x, this.#mousePosition.x);
-                    const top = Math.min(this.#firstLeftPosition.y, this.#mousePosition.y);
-                    const bottom = Math.max(this.#firstLeftPosition.y, this.#mousePosition.y);
-
-                    for (let x = left; x <= right; x += Tile.SIZE) {
-                        highlightTile(x, top);
-                        highlightTile(x, bottom);
-                    }
-                    for (let y = top; y <= bottom; y += Tile.SIZE) {
-                        highlightTile(left, y);
-                        highlightTile(right, y);
-                    }
-
+                    this.#highlightRect();
+                    break;
+                }
+            case User.TOOLS.LINE:
+                if (this.#firstLeftPosition !== null) {
+                    this.#highlightLine();
                     break;
                 }
             case User.TOOLS.PEN:
-                highlightTile(this.#mousePosition.x, this.#mousePosition.y);
+                this.#highlightTile(this.#mousePosition.x, this.#mousePosition.y);
                 break;
         }
     }
@@ -178,5 +215,14 @@ class User extends GameObject {
                 ctx.fillRect(Number(x), y, Tile.SIZE, Tile.SIZE);
             }
         }
+    }
+
+    #getClickAndHoldBoundary() {
+        return new Boundary(
+            Math.min(this.#firstLeftPosition.x, this.#mousePosition.x),
+            Math.max(this.#firstLeftPosition.x, this.#mousePosition.x),
+            Math.min(this.#firstLeftPosition.y, this.#mousePosition.y),
+            Math.max(this.#firstLeftPosition.y, this.#mousePosition.y)
+        );
     }
 }
