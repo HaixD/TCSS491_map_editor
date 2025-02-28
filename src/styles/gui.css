@@ -56,7 +56,8 @@
     }
 }
 
-#objects .tool-toggle.selected {
+#objects .tool-toggle.selected,
+#tools .tool-toggle.selected {
     background-color: white;
     color: black;
 }

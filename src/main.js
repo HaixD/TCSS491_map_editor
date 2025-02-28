@@ -24,6 +24,7 @@ async function main() {
     GUI.addToolOption("tile", { name: "AIR", value: 0 });
 
     document.querySelector("#tiles > *:first-child").onclick();
+    document.querySelector("#tools > *:first-child").onclick();
 
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("gameWorld");

@@ -1,7 +1,8 @@
 /** @typedef {import("./game-map")} */
 
 class GUI {
-    static #selectedTile = Tile.AIR;
+    static #selectedTile = null;
+    static #selectedTool = null;
 
     /**
      * @param {HTMLElement} target
@@ -16,12 +17,24 @@ class GUI {
         }
 
         target.classList.add("selected");
-
         this.#selectedTile = tile;
+    }
+
+    static selectTool(target, tool) {
+        for (const element of document.querySelectorAll("#tools .tool-toggle")) {
+            element.classList.remove("selected");
+        }
+
+        target.classList.add("selected");
+        this.#selectedTool = tool;
     }
 
     static getTile() {
         return GUI.#selectedTile;
+    }
+
+    static getTool() {
+        return this.#selectedTool;
     }
 
     static saveMap() {
