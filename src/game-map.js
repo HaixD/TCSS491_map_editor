@@ -9,10 +9,18 @@ class GameMap {
         throw new Error("GameMap is a static class and should not have any instances");
     }
 
-    static setTile(x, y, tile) {
-        const chunkX = Math.floor(x / Chunk.SIZE) * Chunk.SIZE;
-        const chunkY = Math.floor(y / Chunk.SIZE) * Chunk.SIZE;
+    static getChunkForTile(x, y) {
+        const { x: chunkX, y: chunkY } = this.#getChunkPosition(x, y);
 
+        if (this.#hasChunk(chunkX, chunkY)) {
+            return this.#getChunk(chunkX, chunkY);
+        }
+
+        return null;
+    }
+
+    static setTile(x, y, tile) {
+        const { x: chunkX, y: chunkY } = this.#getChunkPosition(x, y);
         if (tile === Tile.AIR && !this.#hasChunk(chunkX, chunkY)) {
             return;
         }
@@ -22,8 +30,16 @@ class GameMap {
 
         if (chunk.isEmpty()) {
             this.#deleteChunk(chunkX, chunkY);
-            console.log(this.#chunks);
         }
+    }
+
+    static getTile(x, y) {
+        const chunk = this.getChunkForTile(x, y);
+        if (chunk === null) {
+            return Tile.AIR;
+        }
+
+        return chunk.getTile(x, y);
     }
 
     static export() {
@@ -74,6 +90,10 @@ class GameMap {
         }
 
         this.#chunks = {};
+    }
+
+    static #getChunkPosition(x, y) {
+        return new Vector(x, y).map(value => Math.floor(value / Chunk.SIZE) * Chunk.SIZE);
     }
 
     static *#getChunks() {

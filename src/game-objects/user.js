@@ -10,6 +10,7 @@ class User extends GameObject {
         PEN: 0,
         RECT: 1,
         LINE: 2,
+        FILL: 3,
     };
 
     /** @type {Vector | null} */
@@ -84,13 +85,23 @@ class User extends GameObject {
                 this.#firstLeftPosition = this.#mousePosition;
             }
 
-            if (tool === User.TOOLS.PEN) {
-                this.#fillHighlightedTiles();
+            switch (tool) {
+                case User.TOOLS.FILL:
+                    this.#fill();
+                    break;
+                case User.TOOLS.PEN:
+                    this.#fillHighlightedTiles();
+                    break;
             }
         } else {
             // left up
-            if (this.#firstLeftPosition !== null && tool !== User.TOOLS.PEN) {
-                this.#fillHighlightedTiles();
+            if (this.#firstLeftPosition !== null) {
+                switch (tool) {
+                    case User.TOOLS.LINE:
+                    case User.TOOLS.RECT:
+                        this.#fillHighlightedTiles();
+                        break;
+                }
             }
             this.#firstLeftPosition = null;
         }
@@ -120,6 +131,32 @@ class User extends GameObject {
         this.#drawHighlights(ctx);
 
         ctx.restore();
+    }
+
+    #fill() {
+        const TARGET_TILE = GameMap.getTile(this.#mousePosition.x, this.#mousePosition.y);
+        if (TARGET_TILE === GUI.getTile()) {
+            return;
+        }
+
+        const stack = [this.#mousePosition];
+        while (stack.length > 0) {
+            const { x, y } = stack.pop();
+            if (
+                (x !== this.#mousePosition.x || y !== this.#mousePosition.y) &&
+                (GameMap.getTile(x, y) !== TARGET_TILE || GameMap.getChunkForTile(x, y) === null)
+            ) {
+                continue;
+            }
+
+            console.log(x, y);
+            GameMap.setTile(x, y, GUI.getTile());
+
+            stack.push(new Vector(x + Tile.SIZE, y));
+            stack.push(new Vector(x - Tile.SIZE, y));
+            stack.push(new Vector(x, y + Tile.SIZE));
+            stack.push(new Vector(x, y - Tile.SIZE));
+        }
     }
 
     #fillHighlightedTiles() {
@@ -201,6 +238,7 @@ class User extends GameObject {
                     break;
                 }
             case User.TOOLS.PEN:
+            case User.TOOLS.FILL:
                 this.#highlightTile(this.#mousePosition.x, this.#mousePosition.y);
                 break;
         }

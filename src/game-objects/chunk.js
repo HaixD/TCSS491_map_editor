@@ -42,6 +42,12 @@ class Chunk extends GameObject {
         }
     }
 
+    getTile(x, y) {
+        return this.#tiles[x] === undefined || this.#tiles[x][y] === undefined
+            ? Tile.AIR
+            : this.#tiles[x][y];
+    }
+
     *getTiles() {
         for (const [x, col] of Object.entries(this.#tiles)) {
             for (const [y, tile] of Object.entries(col)) {
