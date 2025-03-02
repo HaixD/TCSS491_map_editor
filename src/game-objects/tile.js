@@ -14,6 +14,7 @@ class Tile {
     static TELEPORT_PICKUP = -7;
 
     static HEALTH_PICKUP = -8;
+    static END_PICKUP = -9;
 
     static AIR = 0;
     static DIRT = 1;
@@ -21,6 +22,28 @@ class Tile {
     static DIRT_STAIR_BR = 3;
     static DIRT_STAIR_TL = 4;
     static DIRT_STAIR_TR = 5;
+    static BRICK = 6;
+    static BRICK_BG = 7;
+    static BRICK_BL = 8;
+    static BRICK_BR = 9;
+    static BRICK_TL = 10;
+    static BRICK_TR = 11;
+    static WOOD = 12;
+    static WOOD_BG = 13;
+    static WOOD_BL = 14;
+    static WOOD_BR = 15;
+    static WOOD_TL = 16;
+    static WOOD_TR = 17;
+    static LEAF = 18;
+    static LEAF_BG = 19;
+    static LEAF_BL = 20;
+    static LEAF_BR = 21;
+    static LEAF_TL = 22;
+    static LEAF_TR = 23;
+    static LEAF_BL_BG = 24;
+    static LEAF_BR_BG = 25;
+    static LEAF_TL_BG = 26;
+    static LEAF_TR_BG = 27;
 
     constructor() {
         throw new Error("Tile is a static class and should not have any instances");
