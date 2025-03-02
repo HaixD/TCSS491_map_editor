@@ -34,7 +34,6 @@
         <!-- Game Content -->
         <script type="text/javascript" src="./src/game-objects/tile.js"></script>
         <script type="text/javascript" src="./src/game-objects/chunk.js"></script>
-        <script type="text/javascript" src="./src/tool.js"></script>
         <script type="text/javascript" src="./src/gui.js"></script>
         <script type="text/javascript" src="./src/game-objects/grid-ui.js"></script>
         <script type="text/javascript" src="./src/game-objects/user.js"></script>
@@ -51,81 +50,65 @@
                 autofocus
             >
             </canvas>
-            <div class="overlap-item" id="gui-container">
-                <div id="toolbar">
-                    <div>
-                        <h1>Tiles</h1>
-                        <div id="tiles" class="tool-group"></div>
-                    </div>
-                    <hr />
-                    <div>
-                        <h1>Objects</h1>
-                        <div id="objects" class="tool-group"></div>
-                    </div>
-                    <hr />
-                    <div>
-                        <h1>Tools</h1>
-                        <div id="tools" class="tool-group">
-                            <div class="tool-toggle" onclick="GUI.selectTool(this, User.TOOLS.PEN)">
-                                Pen
-                            </div>
-                            <div
-                                class="tool-toggle"
-                                onclick="GUI.selectTool(this, User.TOOLS.RECT)"
-                            >
-                                Rect
-                            </div>
-                            <div
-                                class="tool-toggle"
-                                onclick="GUI.selectTool(this, User.TOOLS.LINE)"
-                            >
-                                Line
-                            </div>
-                            <div
-                                class="tool-toggle"
-                                onclick="GUI.selectTool(this, User.TOOLS.FILL)"
-                            >
-                                Fill
-                            </div>
+            <div class="overlap-item" id="right-bar">
+                <div>
+                    <h1>Tools</h1>
+                    <div id="tools" class="tool-group">
+                        <div class="tool-toggle" onclick="GUI.selectTool(this, User.TOOLS.PEN)">
+                            Pen
+                        </div>
+                        <div class="tool-toggle" onclick="GUI.selectTool(this, User.TOOLS.RECT)">
+                            Rect
+                        </div>
+                        <div class="tool-toggle" onclick="GUI.selectTool(this, User.TOOLS.LINE)">
+                            Line
+                        </div>
+                        <div class="tool-toggle" onclick="GUI.selectTool(this, User.TOOLS.FILL)">
+                            Fill
                         </div>
                     </div>
-                    <hr />
-                    <!-- <div>
-                        <h1>Checklist</h1>
-                        <div id="checklist">
-                            <div>
-                                <input type="checkbox" name="has-player" disabled />
-                                <label for="has-player">Has Player (NA)</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" name="has-player" disabled />
-                                <label for="has-player">Has Finish (NA)</label>
-                            </div>
+                </div>
+                <div>
+                    <h1>Layer</h1>
+                    <div id="layer-input">
+                        <label for="layer">Layer:</label>
+                        <input
+                            type="number"
+                            name="layer"
+                            id="layer"
+                            min="0"
+                            max="1"
+                            onchange="GUI.selectLayer(Number(this.value))"
+                        />
+                    </div>
+                    <div id="show-input">
+                        <label for="show">Show all layers:</label>
+                        <input
+                            type="checkbox"
+                            name="show"
+                            id="show"
+                            checked
+                            onchange="GUI.toggleShowAllLayers(this.checked)"
+                        />
+                    </div>
+                </div>
+                <div id="transfer">
+                    <h1>Transfer</h1>
+                    <div id="export" class="tool-group">
+                        <div id="download-json" class="tool-button" onclick="GUI.saveMap()">
+                            Download
                         </div>
                     </div>
-                    <hr /> -->
-                    <div>
-                        <h1>Export</h1>
-                        <div id="export" class="tool-group">
-                            <div id="download-json" class="tool-button" onclick="GUI.saveMap()">
-                                Download (.json)
-                            </div>
-                        </div>
-                    </div>
-                    <hr />
-                    <div>
-                        <h1>Import</h1>
-                        <div id="import" class="tool-group">
-                            <div id="import-input" class="tool-button">
-                                <label for="import-json">Import (.json)</label>
-                                <input
-                                    id="import-json"
-                                    class="tool-button"
-                                    type="file"
-                                    accept="application/json"
-                                    onchange="GUI.loadMap()"
-                                />
-                            </div>
+                    <div id="import" class="tool-group">
+                        <div id="import-input" class="tool-button">
+                            <label for="import-json">Import</label>
+                            <input
+                                id="import-json"
+                                class="tool-button"
+                                type="file"
+                                accept="application/json"
+                                onchange="GUI.loadMap()"
+                            />
                         </div>
                     </div>
                 </div>
@@ -134,4 +117,18 @@
     </body>
 
     <script type="text/javascript" src="./src/main.js"></script>
+    <script type="text/javascript">
+        for (const element of document.querySelectorAll('input[type="number"]')) {
+            element.addEventListener("keypress", function (evt) {
+                if (evt.which < 48 || evt.which > 57) {
+                    evt.preventDefault();
+                }
+            });
+            element.value = element.min;
+            element.onchange();
+        }
+        for (const element of document.querySelectorAll('input[type="checkbox"]')) {
+            element.onchange();
+        }
+    </script>
 </html>

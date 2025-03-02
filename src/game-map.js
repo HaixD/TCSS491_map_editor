@@ -19,14 +19,16 @@ class GameMap {
         return null;
     }
 
-    static setTile(x, y, tile) {
+    static setTile(x, y) {
+        const tile = GUI.getTile();
+
         const { x: chunkX, y: chunkY } = this.#getChunkPosition(x, y);
         if (tile === Tile.AIR && !this.#hasChunk(chunkX, chunkY)) {
             return;
         }
 
         const chunk = this.#getChunk(chunkX, chunkY);
-        chunk.setTile(x, y, tile);
+        chunk.setTile(x, y);
 
         if (chunk.isEmpty()) {
             this.#deleteChunk(chunkX, chunkY);

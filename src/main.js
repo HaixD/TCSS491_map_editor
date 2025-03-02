@@ -7,21 +7,12 @@ async function main() {
     for (const [key, value] of Object.entries(Tile)) {
         if (key === "SIZE") continue;
 
-        if (value > 0) {
-            GUI.addToolOption("tile", {
-                name: key.slice(0, 3),
-                value,
-                imageSrc: `images/${key.toLowerCase()}.png`,
-            });
-        } else if (value < 0) {
-            GUI.addToolOption("object", {
-                name: key.slice(0, 3),
-                value,
-                imageSrc: `images/${key.toLowerCase()}.png`,
-            });
-        }
+        GUI.addToolOption(Tile.getCategory(value), {
+            name: key.slice(0, 3),
+            value,
+            imageSrc: `images/${key.toLowerCase()}.png`,
+        });
     }
-    GUI.addToolOption("tile", { name: "AIR", value: 0 });
 
     document.querySelector("#tiles > *:first-child").onclick();
     document.querySelector("#tools > *:first-child").onclick();

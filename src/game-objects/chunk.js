@@ -8,7 +8,6 @@ class Chunk extends GameObject {
     #boundary;
     /** @type {{[x: string]: {[y: string]: number}}} */
     #tiles;
-
     /**
      * @param {Vector} position
      */
@@ -23,6 +22,7 @@ class Chunk extends GameObject {
             this.position.y,
             this.position.y + Chunk.SIZE
         );
+
         this.#tiles = {};
     }
 
@@ -30,15 +30,16 @@ class Chunk extends GameObject {
         return Object.keys(this.#tiles).length === 0;
     }
 
-    setTile(x, y, tile) {
-        if (tile === Tile.AIR) {
-            this.#deleteTile(x, y);
-        } else {
-            if (this.#tiles[x] === undefined) {
-                this.#tiles[x] = {};
-            }
+    setTile(x, y) {
+        const tile = GUI.getTile();
+        if (this.#tiles[x] === undefined) {
+            this.#tiles[x] = {};
+        }
 
-            this.#tiles[x][y] = tile;
+        this.#tiles[x][y] = Tile.applyTile(this.#tiles[x][y] || 0, tile, GUI.getLayer());
+        console.log(`placed ${this.#tiles[x][y]}`);
+        if (this.#tiles[x][y] === Tile.AIR) {
+            this.#deleteTile(x, y);
         }
     }
 
@@ -68,7 +69,12 @@ class Chunk extends GameObject {
         super.draw(ctx);
 
         for (const { x, y, tile } of this.getTiles()) {
-            Tile.drawTile(tile, ctx, new Vector(x, y));
+            const args = [tile, ctx, new Vector(x, y)];
+            if (GUI.getShowAllLayersState()) {
+                Tile.drawTile(...args);
+            } else {
+                Tile.drawTileLayer(...args, GUI.getLayer());
+            }
         }
     }
 

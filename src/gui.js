@@ -1,23 +1,26 @@
 /** @typedef {import("./game-map")} */
 
 class GUI {
-    static #selectedTile = null;
-    static #selectedTool = null;
+    static #selectedTile = -1;
+    static #selectedTool = -1;
+    static #selectedLayer = 0;
+    static #toggledShowAllLayers = false;
+    /** @type {Set<string>} */
+    static #sections = new Set();
 
     /**
      * @param {HTMLElement} target
      * @param {number} tile
      */
     static selectTile(target, tile) {
-        for (const element of document.querySelectorAll("#tiles .tool-toggle")) {
-            element.classList.remove("selected");
-        }
-        for (const element of document.querySelectorAll("#objects .tool-toggle")) {
+        for (const element of document.querySelectorAll(
+            "#right-bar > :not(:first-child) .selected"
+        )) {
             element.classList.remove("selected");
         }
 
         target.classList.add("selected");
-        this.#selectedTile = tile;
+        GUI.#selectedTile = tile;
     }
 
     static selectTool(target, tool) {
@@ -26,7 +29,15 @@ class GUI {
         }
 
         target.classList.add("selected");
-        this.#selectedTool = tool;
+        GUI.#selectedTool = tool;
+    }
+
+    static selectLayer(layer) {
+        this.#selectedLayer = layer;
+    }
+
+    static toggleShowAllLayers(state) {
+        this.#toggledShowAllLayers = state;
     }
 
     static getTile() {
@@ -34,7 +45,15 @@ class GUI {
     }
 
     static getTool() {
-        return this.#selectedTool;
+        return GUI.#selectedTool;
+    }
+
+    static getLayer() {
+        return GUI.#selectedLayer;
+    }
+
+    static getShowAllLayersState() {
+        return GUI.#toggledShowAllLayers;
     }
 
     static saveMap() {
@@ -60,11 +79,26 @@ class GUI {
     }
 
     /**
-     * @param {"tile" | "object"} type
+     * @param {string} type
      * @param {{name: string, value: number, imageSrc: string | undefined}}
      */
     static addToolOption(type, { name, value, imageSrc }) {
-        const tiles = document.getElementById(`${type}s`);
+        if (!GUI.#sections.has(type)) {
+            GUI.#sections.add(type);
+            const toolbar = document.getElementById("transfer");
+            toolbar.insertAdjacentHTML(
+                "beforebegin",
+                `
+                <div>
+                    <h1>${type}</h1>
+                    <div id="${type}" class="tool-group"></div>
+                </div>
+            `
+            );
+            return this.addToolOption(type, { name, value, imageSrc });
+        }
+
+        const tiles = document.getElementById(type);
 
         const tree = document.createDocumentFragment();
         const container = document.createElement("div");
