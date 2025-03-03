@@ -33,6 +33,20 @@ class GameMap {
         }
     }
 
+    static applyTile(x, y, tile) {
+        const { x: chunkX, y: chunkY } = this.#getChunkPosition(x, y);
+        if (tile === Tile.AIR && !this.#hasChunk(chunkX, chunkY)) {
+            return;
+        }
+
+        const chunk = this.#getChunk(chunkX, chunkY);
+        chunk.applyTile(x, y, tile);
+
+        if (chunk.isEmpty()) {
+            this.#deleteChunk(chunkX, chunkY);
+        }
+    }
+
     static getTile(x, y) {
         const chunk = this.getChunkForTile(x, y);
         if (chunk === null) {

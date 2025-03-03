@@ -32,6 +32,19 @@ class Chunk extends GameObject {
     }
 
     setTile(x, y, tile) {
+        if (tile === Tile.AIR) {
+            this.#deleteTile(x, y);
+            return;
+        }
+
+        if (this.#tiles[x] === undefined) {
+            this.#tiles[x] = {};
+        }
+
+        this.#tiles[x][y] = tile;
+    }
+
+    applyTile(x, y, tile) {
         if (this.#tiles[x] === undefined) {
             this.#tiles[x] = {};
         }

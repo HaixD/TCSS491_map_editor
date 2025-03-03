@@ -20,14 +20,27 @@ class MapExport {
     }
 
     static #updateV0(json) {
+        const backgrounds = new Set([Tile.BRICK_BG, Tile.WOOD_BG, Tile.LEAF_BG]);
+
         json.version = 1;
 
         for (let x = 0; x < json.tiles.length; x++) {
             for (let y = 0; y < json.tiles[x].length; y++) {
-                const tile = json.tiles[x][y];
+                let tile = json.tiles[x][y];
+
+                // migrate tile values
                 if (tile < 0) {
-                    json.tiles[x][y] = 80 + Math.abs(tile);
+                    tile = 80 + Math.abs(tile);
                 }
+
+                // apply new layers
+                let layer = 1;
+                if (backgrounds.has(tile)) {
+                    layer = 0;
+                } else if (tile >= 81) {
+                    layer = 2;
+                }
+                json.tiles[x][y] = Tile.applyTile(0, tile, layer);
             }
         }
 
