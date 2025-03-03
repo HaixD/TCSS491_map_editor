@@ -42,10 +42,8 @@ class Tile {
     static HEALTH_PICKUP = 88;
     static END_PICKUP = 89;
 
-    static #cursor = Math.pow(
-        10,
-        Math.trunc(Math.log10(Object.values(Tile).reduce((a, b) => Math.max(a, b)))) + 1
-    );
+    static #precision = Tile.#getDigits(Object.values(Tile).reduce((a, b) => Math.max(a, b)));
+    static #precision10 = Math.pow(10, Tile.#precision);
     /** @type {{[value: string]: string}} */
     static #tileImages = {};
     static SIZE = 48;
@@ -63,20 +61,19 @@ class Tile {
     }
 
     static applyTile(base, tile, layer) {
-        const rightExtractor = Math.pow(this.#cursor, layer);
-        const rightPart = base % rightExtractor;
-        base = Math.trunc(base / (rightExtractor * this.#cursor));
-        base *= this.#cursor;
+        const rightExtractor = Math.pow(10, layer * this.#precision);
+        const rhs = base % rightExtractor;
+        base = Math.trunc(base / rightExtractor / this.#precision10);
+        base *= this.#precision10;
         base += tile;
         base *= rightExtractor;
-        base += rightPart;
+        base += rhs;
 
         return base;
     }
 
     static getTileLayer(tile, layer) {
-        const rightExtractor = Math.pow(this.#cursor, layer);
-        return Math.trunc(tile / rightExtractor) % this.#cursor;
+        return Tile.#splitTileLayer(tile, layer).quotient;
     }
 
     /**
@@ -98,10 +95,9 @@ class Tile {
         const normalShape = new Vector(Tile.SIZE, Tile.SIZE);
         const largeShape = normalShape.multiply(2);
 
-        const remaining = Math.trunc(tile / this.#cursor);
-        tile %= this.#cursor;
+        const { quotient, remainder } = Tile.#splitTileLayer(tile, 0);
 
-        switch (tile % this.#cursor) {
+        switch (quotient) {
             // HIDDEN TILES
             case Tile.AIR:
                 break;
@@ -109,11 +105,11 @@ class Tile {
             case Tile.PLAYER:
             case Tile.SLASHER:
             case Tile.SHOOTER:
-                Tile.#drawImage(ctx, position, largeShape, tile);
+                Tile.#drawImage(ctx, position, largeShape, quotient);
                 break;
             // UNIQUE TILES
             case Tile.BLOCKER: // SPECIAL SIZE
-                Tile.#drawImage(ctx, position, new Vector(48, 96), tile);
+                Tile.#drawImage(ctx, position, new Vector(48, 96), quotient);
                 break;
             case Tile.SLASH_PICKUP: // PLACEHOLDER IMAGE TILES
             case Tile.TELEPORT_PICKUP:
@@ -121,10 +117,10 @@ class Tile {
                 break;
             // 1x1 TILES
             default:
-                Tile.#drawImage(ctx, position, normalShape, tile);
+                Tile.#drawImage(ctx, position, normalShape, quotient);
         }
 
-        Tile.drawTile(remaining, ctx, position);
+        Tile.drawTile(remainder, ctx, position);
     }
 
     /**
@@ -146,7 +142,6 @@ class Tile {
     static #drawImage(ctx, position, shape, src) {
         const imageSrc = typeof src === "number" ? Tile.#tileImages[src] : src;
         if (imageSrc === undefined) {
-            console.log(src);
             ctx.fillRect(position.x, position.y, shape.x, shape.y);
             return;
         }
@@ -164,5 +159,19 @@ class Tile {
         position = position.subtract(offset);
 
         ctx.drawImage(image, position.x, position.y, shape.x, shape.y);
+    }
+
+    static #getDigits(value) {
+        if (value === 0) return 0;
+        return Math.trunc(Math.log10(value)) + 1;
+    }
+
+    static #splitTileLayer(tile, layer) {
+        const remaining = Math.trunc(tile / Math.pow(10, this.#precision * layer));
+
+        return {
+            quotient: remaining % Tile.#precision10,
+            remainder: Math.trunc(remaining / Tile.#precision10),
+        };
     }
 }

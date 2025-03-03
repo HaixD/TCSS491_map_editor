@@ -30,8 +30,7 @@ class Chunk extends GameObject {
         return Object.keys(this.#tiles).length === 0;
     }
 
-    setTile(x, y) {
-        const tile = GUI.getTile();
+    setTile(x, y, tile) {
         if (this.#tiles[x] === undefined) {
             this.#tiles[x] = {};
         }

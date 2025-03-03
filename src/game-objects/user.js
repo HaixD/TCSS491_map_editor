@@ -134,7 +134,10 @@ class User extends GameObject {
     }
 
     #fill() {
-        const TARGET_TILE = GameMap.getTile(this.#mousePosition.x, this.#mousePosition.y);
+        const TARGET_TILE = Tile.getTileLayer(
+            GameMap.getTile(this.#mousePosition.x, this.#mousePosition.y),
+            GUI.getLayer()
+        );
         if (TARGET_TILE === GUI.getTile()) {
             return;
         }
@@ -150,8 +153,7 @@ class User extends GameObject {
                 continue;
             }
 
-            console.log(x, y);
-            GameMap.setTile(x, y);
+            GameMap.setTile(x, y, GUI.getTile());
 
             stack.push(new Vector(x + Tile.SIZE, y));
             stack.push(new Vector(x - Tile.SIZE, y));
@@ -163,7 +165,7 @@ class User extends GameObject {
     #fillHighlightedTiles() {
         for (const [x, col] of Object.entries(this.#highlightedTiles)) {
             for (const y of col) {
-                GameMap.setTile(Number(x), y);
+                GameMap.setTile(Number(x), y, GUI.getTile());
             }
         }
     }

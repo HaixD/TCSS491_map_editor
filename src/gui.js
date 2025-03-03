@@ -74,7 +74,7 @@ class GUI {
         /** @type {HTMLInputElement} */
         const element = document.getElementById("import-json");
         element.files[0].text().then(json => {
-            GameMap.import(JSON.parse(json));
+            GameMap.import(MapExport.update(JSON.parse(json)));
         });
     }
 
