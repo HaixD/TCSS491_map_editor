@@ -36,7 +36,6 @@ class Chunk extends GameObject {
         }
 
         this.#tiles[x][y] = Tile.applyTile(this.#tiles[x][y] || 0, tile, GUI.getLayer());
-        console.log(`placed ${this.#tiles[x][y]}`);
         if (this.#tiles[x][y] === Tile.AIR) {
             this.#deleteTile(x, y);
         }
