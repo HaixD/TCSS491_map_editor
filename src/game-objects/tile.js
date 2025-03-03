@@ -73,7 +73,7 @@ class Tile {
     }
 
     static getTileLayer(tile, layer) {
-        return Tile.#splitTileLayer(tile, layer).quotient;
+        return Tile.splitTileLayer(tile, layer).quotient;
     }
 
     /**
@@ -95,7 +95,7 @@ class Tile {
         const normalShape = new Vector(Tile.SIZE, Tile.SIZE);
         const largeShape = normalShape.multiply(2);
 
-        const { quotient, remainder } = Tile.#splitTileLayer(tile, 0);
+        const { quotient, remainder } = Tile.splitTileLayer(tile, 0);
 
         switch (quotient) {
             // HIDDEN TILES
@@ -166,7 +166,7 @@ class Tile {
         return Math.trunc(Math.log10(value)) + 1;
     }
 
-    static #splitTileLayer(tile, layer) {
+    static splitTileLayer(tile, layer) {
         const remaining = Math.trunc(tile / Math.pow(10, this.#precision * layer));
 
         return {

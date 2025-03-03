@@ -114,6 +114,7 @@ class GUI {
                 container.removeChild(imageElement);
                 container.appendChild(document.createTextNode(name));
                 Tile.setImageSrc(value, undefined);
+                console.clear();
             };
 
             Tile.setImageSrc(value, imageSrc);

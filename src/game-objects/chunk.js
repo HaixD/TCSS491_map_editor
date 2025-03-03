@@ -11,6 +11,7 @@ class Chunk extends GameObject {
     /**
      * @param {Vector} position
      */
+
     constructor(position) {
         super();
 
@@ -66,14 +67,26 @@ class Chunk extends GameObject {
     draw(ctx) {
         super.draw(ctx);
 
-        for (const { x, y, tile } of this.getTiles()) {
-            const args = [tile, ctx, new Vector(x, y)];
+        ctx.save();
+        for (let { x, y, tile } of this.getTiles()) {
             if (GUI.getShowAllLayersState()) {
-                Tile.drawTile(...args);
+                Tile.drawTile(tile, ctx, new Vector(x, y));
             } else {
-                Tile.drawTileLayer(...args, GUI.getLayer());
+                let layer = 0;
+
+                while (true) {
+                    const { quotient, remainder } = Tile.splitTileLayer(tile, 0);
+                    if (quotient === 0 && remainder === 0) break;
+
+                    tile = remainder;
+
+                    ctx.globalAlpha = layer === GUI.getLayer() ? 1 : 0.33;
+                    Tile.drawTile(quotient, ctx, new Vector(x, y));
+                    layer++;
+                }
             }
         }
+        ctx.restore();
     }
 
     #deleteTile(x, y) {
