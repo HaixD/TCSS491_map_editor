@@ -95,32 +95,30 @@ class Tile {
         const normalShape = new Vector(Tile.SIZE, Tile.SIZE);
         const largeShape = normalShape.multiply(2);
 
-        const { quotient, remainder } = Tile.splitTileLayer(tile, 0);
-
-        switch (quotient) {
-            // HIDDEN TILES
-            case Tile.AIR:
-                break;
-            // 2x2 TILES
-            case Tile.PLAYER:
-            case Tile.SLASHER:
-            case Tile.SHOOTER:
-                Tile.#drawImage(ctx, position, largeShape, quotient);
-                break;
-            // UNIQUE TILES
-            case Tile.BLOCKER: // SPECIAL SIZE
-                Tile.#drawImage(ctx, position, new Vector(48, 96), quotient);
-                break;
-            case Tile.SLASH_PICKUP: // PLACEHOLDER IMAGE TILES
-            case Tile.TELEPORT_PICKUP:
-                Tile.#drawImage(ctx, position, normalShape, "images/shoot_pickup.png");
-                break;
-            // 1x1 TILES
-            default:
-                Tile.#drawImage(ctx, position, normalShape, quotient);
+        for (const layer of Tile.iterate(tile)) {
+            switch (layer) {
+                // HIDDEN TILES
+                case Tile.AIR:
+                    break;
+                // 2x2 TILES
+                case Tile.PLAYER:
+                case Tile.SLASHER:
+                case Tile.SHOOTER:
+                    Tile.#drawImage(ctx, position, largeShape, layer);
+                    break;
+                // UNIQUE TILES
+                case Tile.BLOCKER: // SPECIAL SIZE
+                    Tile.#drawImage(ctx, position, new Vector(48, 96), layer);
+                    break;
+                case Tile.SLASH_PICKUP: // PLACEHOLDER IMAGE TILES
+                case Tile.TELEPORT_PICKUP:
+                    Tile.#drawImage(ctx, position, normalShape, "images/shoot_pickup.png");
+                    break;
+                // 1x1 TILES
+                default:
+                    Tile.#drawImage(ctx, position, normalShape, layer);
+            }
         }
-
-        Tile.drawTile(remainder, ctx, position);
     }
 
     /**
