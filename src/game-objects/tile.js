@@ -174,4 +174,19 @@ class Tile {
             remainder: Math.trunc(remaining / Tile.#precision10),
         };
     }
+
+    static *iterate(tile) {
+        if (tile === Tile.AIR) return tile;
+
+        let remaining = tile;
+        while (true) {
+            const { quotient, remainder } = Tile.splitTileLayer(remaining, 0);
+            if (quotient === Tile.AIR && remainder === Tile.AIR) {
+                break;
+            }
+
+            yield quotient;
+            remaining = remainder;
+        }
+    }
 }
