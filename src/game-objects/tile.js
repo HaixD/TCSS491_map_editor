@@ -194,6 +194,8 @@ class Tile {
             const { quotient, remainder } = Tile.splitTileLayer(remaining, 0);
             if (quotient === Tile.AIR && remainder === Tile.AIR) {
                 break;
+            } else if (isNaN(quotient)) {
+                break;
             }
 
             yield quotient;

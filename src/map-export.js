@@ -15,6 +15,9 @@ class MapExport {
         if (!("version" in json)) {
             json = MapExport.#updateV0(json);
         }
+        if (json.version === 1) {
+            json = MapExport.#updateV1(json);
+        }
 
         return json;
     }
@@ -41,6 +44,38 @@ class MapExport {
                     layer = 2;
                 }
                 json.tiles[x][y] = Tile.applyTile(0, tile, layer);
+            }
+        }
+
+        return json;
+    }
+
+    static #updateV1(json) {
+        json.version = 2;
+
+        for (let x = 0; x < json.tiles.length; x++) {
+            for (let y = 0; y < json.tiles[x].length; y++) {
+                let tile = json.tiles[x][y];
+
+                // move layer 2 objects to layer 3
+                const tileLayer2 = Tile.getTileLayer(tile, 2);
+                if (Tile.getCategory(tileLayer2) === "objects") {
+                    tile = Tile.applyTile(tile, Tile.AIR, 2);
+                    tile = Tile.applyTile(tile, tileLayer2, 3);
+                }
+
+                // move grass and flowers from layer 0 or 1 to layer 2
+                const tileLayer0 = Tile.getTileLayer(tile, 0);
+                const tileLayer1 = Tile.getTileLayer(tile, 1);
+                if (tileLayer0 === Tile.GRASS || tileLayer0 === Tile.FLOWER) {
+                    tile = Tile.applyTile(tile, Tile.AIR, 0);
+                    tile = Tile.applyTile(tile, tileLayer0, 2);
+                } else if (tileLayer1 === Tile.GRASS || tileLayer1 === Tile.FLOWER) {
+                    tile = Tile.applyTile(tile, Tile.AIR, 1);
+                    tile = Tile.applyTile(tile, tileLayer1, 2);
+                }
+
+                json.tiles[x][y] = tile;
             }
         }
 
