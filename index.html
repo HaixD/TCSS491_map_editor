@@ -95,18 +95,21 @@
                 <div id="transfer">
                     <h1>Transfer</h1>
                     <div id="export" class="tool-group">
-                        <div id="download-json" class="tool-button" onclick="GUI.saveMap()">
-                            Download
+                        <div id="download-json" class="tool-button" onclick="GUI.saveMapJS()">
+                            Download JS
+                        </div>
+                        <div id="download-json" class="tool-button" onclick="GUI.saveMapJSON()">
+                            Download JSON
                         </div>
                     </div>
                     <div id="import" class="tool-group">
-                        <div id="import-input" class="tool-button">
+                        <div class="import-input tool-button">
                             <label for="import-json">Import</label>
                             <input
                                 id="import-json"
                                 class="tool-button"
                                 type="file"
-                                accept="application/json"
+                                accept=".js, .json"
                                 onchange="GUI.loadMap()"
                             />
                         </div>

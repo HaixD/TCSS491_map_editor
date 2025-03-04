@@ -96,10 +96,10 @@
 }
 
 #import {
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
-#import-input {
+.import-input {
     input[type="file"] {
         display: none;
     }

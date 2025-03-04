@@ -56,14 +56,30 @@ class GUI {
         return GUI.#toggledShowAllLayers;
     }
 
-    static saveMap() {
+    static saveMapJSON() {
         const blob = new Blob([JSON.stringify(GameMap.export())], {
             type: "application/json",
         });
+
         const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "map.json";
+        link.download = "map_export_data.json";
         link.style.display = "none";
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    }
+
+    static saveMapJS() {
+        const blob = new Blob([`const MAP_EXPORT_DATA = ${JSON.stringify(GameMap.export())}`], {
+            type: "text/javascript",
+        });
+
+        const link = document.createElement("a");
+        link.download = "map_export_data.js";
+        link.style.display = "none";
+        link.href = URL.createObjectURL(blob);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -73,8 +89,15 @@ class GUI {
     static loadMap() {
         /** @type {HTMLInputElement} */
         const element = document.getElementById("import-json");
-        element.files[0].text().then(json => {
-            GameMap.import(MapExport.update(JSON.parse(json)));
+        element.files[0].text().then(data => {
+            switch (element.files[0].type) {
+                case "application/json":
+                    GameMap.import(MapExport.update(JSON.parse(data)));
+                    break;
+                case "application/x-javascript":
+                default:
+                    GameMap.import(MapExport.update(JSON.parse(data.slice(24))));
+            }
         });
     }
 

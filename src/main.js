@@ -7,10 +7,16 @@ async function main() {
     for (const [key, value] of Object.entries(Tile)) {
         if (key === "SIZE") continue;
 
+        // preload images
+        const imageSrc = `images/${key.toLowerCase()}.png`;
+        try {
+            await AssetManager.getImage(imageSrc);
+        } catch (err) {}
+
         GUI.addToolOption(Tile.getCategory(value), {
             name: key.slice(0, 3),
             value,
-            imageSrc: `images/${key.toLowerCase()}.png`,
+            imageSrc,
         });
     }
 
