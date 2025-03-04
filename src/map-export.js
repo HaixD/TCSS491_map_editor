@@ -40,9 +40,10 @@ class MapExport {
                 let layer = 1;
                 if (backgrounds.has(tile)) {
                     layer = 0;
-                } else if (tile >= 81) {
+                } else if (Tile.getCategory(tile) === "objects") {
                     layer = 2;
                 }
+
                 json.tiles[x][y] = Tile.applyTile(0, tile, layer);
             }
         }
