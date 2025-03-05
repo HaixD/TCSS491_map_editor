@@ -12,6 +12,11 @@ class Chunk extends GameObject {
      * @param {Vector} position
      */
 
+    #buffer;
+    #changed;
+    #bitmap;
+    #GUIState;
+
     constructor(position) {
         super();
 
@@ -25,6 +30,35 @@ class Chunk extends GameObject {
         );
 
         this.#tiles = {};
+        this.#changed = false;
+        this.#buffer = document.createElement("canvas");
+        this.#buffer.width = this.#buffer.height = Chunk.SIZE;
+        this.#buffer.getContext("2d").imageSmoothingEnabled = false;
+        this.#bitmap = null;
+        this.#updateGUIState();
+    }
+
+    #updateGUIState() {
+        this.#GUIState = {
+            layer: GUI.getLayer(),
+            showAllLayers: GUI.getShowAllLayersState(),
+        };
+    }
+
+    #checkGUIStateChange() {
+        const lastState = this.#GUIState;
+        this.#updateGUIState();
+
+        if (lastState.showAllLayers !== this.#GUIState.showAllLayers) {
+            return true;
+        } else if (
+            this.#GUIState.showAllLayers === false &&
+            lastState.layer !== this.#GUIState.layer
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     isEmpty() {
@@ -32,6 +66,8 @@ class Chunk extends GameObject {
     }
 
     setTile(x, y, tile) {
+        this.#changed = true;
+
         if (tile === Tile.AIR) {
             this.#deleteTile(x, y);
             return;
@@ -45,6 +81,8 @@ class Chunk extends GameObject {
     }
 
     applyTile(x, y, tile) {
+        this.#changed = true;
+
         if (this.#tiles[x] === undefined) {
             this.#tiles[x] = {};
         }
@@ -80,26 +118,40 @@ class Chunk extends GameObject {
     draw(ctx) {
         super.draw(ctx);
 
-        ctx.save();
-        for (let { x, y, tile } of this.getTiles()) {
-            if (GUI.getShowAllLayersState()) {
-                Tile.drawTile(tile, ctx, new Vector(x, y));
-            } else {
-                let layer = 0;
+        if (this.#changed || this.#checkGUIStateChange()) {
+            this.#changed = false;
+            const ctx = this.#buffer.getContext("2d");
 
-                while (true) {
-                    const { quotient, remainder } = Tile.splitTileLayer(tile, 0);
-                    if (quotient === 0 && remainder === 0) break;
+            ctx.clearRect(0, 0, Chunk.SIZE, Chunk.SIZE);
+            ctx.save();
+            for (let { x, y, tile } of this.getTiles()) {
+                x -= this.position.x;
+                y -= this.position.y;
 
-                    tile = remainder;
+                if (GUI.getShowAllLayersState()) {
+                    Tile.drawTile(tile, ctx, new Vector(x, y));
+                } else {
+                    let layer = 0;
 
-                    ctx.globalAlpha = layer === GUI.getLayer() ? 1 : 0.33;
-                    Tile.drawTile(quotient, ctx, new Vector(x, y));
-                    layer++;
+                    while (true) {
+                        const { quotient, remainder } = Tile.splitTileLayer(tile, 0);
+                        if (quotient === 0 && remainder === 0) break;
+
+                        tile = remainder;
+
+                        ctx.globalAlpha = layer === GUI.getLayer() ? 1 : 0.33;
+                        Tile.drawTile(quotient, ctx, new Vector(x, y));
+                        layer++;
+                    }
                 }
             }
+            ctx.restore();
+            createImageBitmap(this.#buffer).then(value => (this.#bitmap = value));
         }
-        ctx.restore();
+
+        if (this.#bitmap !== null) {
+            ctx.drawImage(this.#bitmap, this.position.x, this.position.y);
+        }
     }
 
     #deleteTile(x, y) {
