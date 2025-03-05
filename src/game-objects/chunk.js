@@ -145,8 +145,14 @@ class Chunk extends GameObject {
                     }
                 }
             }
+
             ctx.restore();
-            createImageBitmap(this.#buffer).then(value => (this.#bitmap = value));
+            createImageBitmap(this.#buffer).then(value => {
+                if (this.#bitmap !== null) {
+                    this.#bitmap.close();
+                }
+                this.#bitmap = value;
+            });
         }
 
         if (this.#bitmap !== null) {
