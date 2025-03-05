@@ -17,6 +17,7 @@ class User extends GameObject {
     #firstLeftPosition;
     #lastRightPosition;
     #mousePosition;
+    #lastMousePosition;
     #scaleIndex;
 
     /** @type {{[x: string]: Set<int>}} */
@@ -57,6 +58,7 @@ class User extends GameObject {
         const tool = GUI.getTool();
 
         // move
+        this.#lastMousePosition = this.#mousePosition;
         this.#mousePosition = GridUI.toGridPosition(events.worldMousePosition).multiply(Tile.SIZE);
         this.#updateHighlightedTiles();
 
@@ -90,6 +92,7 @@ class User extends GameObject {
 
             switch (tool) {
                 case User.TOOLS.PEN:
+                    this.#highlightLine(this.#lastMousePosition, this.#mousePosition);
                     this.#fillHighlightedTiles();
                     break;
             }
@@ -174,10 +177,16 @@ class User extends GameObject {
      * Uses the Bresenham's line algorithm.
      *
      * Note: code obtained from: https://stackoverflow.com/a/4672319/15187689;
+     *
+     * @param {Vector} start
+     * @param {Vector} end
      */
-    #highlightLine() {
-        let { x: x0, y: y0 } = this.#firstLeftPosition.map(value => Math.round(value / Tile.SIZE));
-        let { x: x1, y: y1 } = this.#mousePosition.map(value => Math.round(value / Tile.SIZE));
+    #highlightLine(start, end) {
+        start ||= this.#firstLeftPosition;
+        end ||= this.#mousePosition;
+
+        let { x: x0, y: y0 } = start.map(value => Math.round(value / Tile.SIZE));
+        let { x: x1, y: y1 } = end.map(value => Math.round(value / Tile.SIZE));
 
         const dx = Math.abs(x1 - x0); // change in X
         const dy = Math.abs(y1 - y0); // change in Y
