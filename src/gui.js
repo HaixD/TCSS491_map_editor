@@ -96,7 +96,17 @@ class GUI {
                     break;
                 case "application/x-javascript":
                 default:
-                    GameMap.import(MapExport.update(JSON.parse(data.slice(24))));
+                    GameMap.import(
+                        MapExport.update(
+                            JSON.parse(
+                                data
+                                    .slice(24)
+                                    .replace(/;/g, "")
+                                    .replace(/([{,])\s*([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+                                    .replace(/,\s*([\]}])/g, "$1")
+                            )
+                        )
+                    );
             }
         });
     }

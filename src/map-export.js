@@ -7,7 +7,7 @@ class MapExport {
      * @param {number[][]} tiles tiles[x][y] = tile
      */
     constructor(top, left, tiles) {
-        this.version = 1;
+        this.version = 3;
         this.top = top;
         this.left = left;
         this.tiles = tiles;
