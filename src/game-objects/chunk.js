@@ -124,7 +124,6 @@ class Chunk extends GameObject {
             this.#changed = false;
             const ctx = this.#buffer.getContext("2d");
 
-            ctx.clearRect(0, 0, Chunk.SIZE, Chunk.SIZE);
             ctx.save();
             for (let { x, y, tile } of this.getTiles()) {
                 x -= this.position.x;
