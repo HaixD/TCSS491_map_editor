@@ -1,3 +1,5 @@
+/** @typedef {import("./game-objects/tile")} */
+
 class MapExport {
     /**
      * @param {number} top
@@ -17,6 +19,9 @@ class MapExport {
         }
         if (json.version === 1) {
             json = MapExport.#updateV1(json);
+        }
+        if (json.version === 2) {
+            json = MapExport.#updateV2(json);
         }
 
         return json;
@@ -74,6 +79,30 @@ class MapExport {
                 } else if (tileLayer1 === Tile.GRASS || tileLayer1 === Tile.FLOWER) {
                     tile = Tile.applyTile(tile, Tile.AIR, 1);
                     tile = Tile.applyTile(tile, tileLayer1, 2);
+                }
+
+                json.tiles[x][y] = tile;
+            }
+        }
+
+        return json;
+    }
+
+    static #updateV2(json) {
+        json.version = 3;
+
+        for (let x = 0; x < json.tiles.length; x++) {
+            for (let y = 0; y < json.tiles[x].length; y++) {
+                let tile = json.tiles[x][y];
+                const layer1 = Tile.getTileLayer(tile, 1);
+                switch (layer1) {
+                    case Tile.TERRAIN_BG_BL:
+                    case Tile.TERRAIN_BG_BR:
+                    case Tile.TERRAIN_BG_TL:
+                    case Tile.TERRAIN_BG_TR:
+                        tile = Tile.applyTile(tile, layer1 - 30, 1);
+                        tile = Tile.applyTile(tile, Tile.TERRAIN_BG, 0);
+                        break;
                 }
 
                 json.tiles[x][y] = tile;
