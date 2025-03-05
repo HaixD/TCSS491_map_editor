@@ -14,7 +14,9 @@ class Chunk extends GameObject {
 
     #buffer;
     #changed;
+    /** @type {ImageBitmap | null} */
     #bitmap;
+    /** @type {{ layer: boolean, showAllLayers: boolean }} */
     #GUIState;
 
     constructor(position) {
@@ -31,7 +33,7 @@ class Chunk extends GameObject {
 
         this.#tiles = {};
         this.#changed = false;
-        this.#buffer = document.createElement("canvas");
+        this.#buffer = new OffscreenCanvas(Chunk.SIZE, Chunk.SIZE);
         this.#buffer.width = this.#buffer.height = Chunk.SIZE;
         this.#buffer.getContext("2d").imageSmoothingEnabled = false;
         this.#bitmap = null;
@@ -147,12 +149,11 @@ class Chunk extends GameObject {
             }
 
             ctx.restore();
-            createImageBitmap(this.#buffer).then(value => {
-                if (this.#bitmap !== null) {
-                    this.#bitmap.close();
-                }
-                this.#bitmap = value;
-            });
+
+            if (this.#bitmap !== null) {
+                this.#bitmap.close();
+            }
+            this.#bitmap = this.#buffer.transferToImageBitmap();
         }
 
         if (this.#bitmap !== null) {
