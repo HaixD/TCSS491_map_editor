@@ -26,10 +26,10 @@ class Tile {
     static LEAF_BR = 21;
     static LEAF_TL = 22;
     static LEAF_TR = 23;
-    static LEAF_BL_BG = 24;
-    static LEAF_BR_BG = 25;
-    static LEAF_TL_BG = 26;
-    static LEAF_TR_BG = 27;
+    static BRICK_BG_BL = 24;
+    static BRICK_BG_BR = 25;
+    static BRICK_BG_TL = 26;
+    static BRICK_BG_TR = 27;
 
     static LEAF_BG_TR = 28;
     static WOOD_BG_BL = 29;
