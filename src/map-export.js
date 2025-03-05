@@ -103,6 +103,19 @@ class MapExport {
                         tile = Tile.applyTile(tile, layer1 - 30, 1);
                         tile = Tile.applyTile(tile, Tile.TERRAIN_BG, 0);
                         break;
+                    case Tile.BRICK_BG_BL:
+                    case Tile.BRICK_BG_BR:
+                    case Tile.BRICK_BG_TL:
+                    case Tile.BRICK_BG_TR:
+                        tile = Tile.applyTile(tile, layer1 - 4, 1);
+                        tile = Tile.applyTile(tile, Tile.LEAF_BG, 0);
+                        break;
+                    case Tile.BRICK_BL:
+                    case Tile.BRICK_BR:
+                    case Tile.BRICK_TL:
+                    case Tile.BRICK_TR:
+                        tile = Tile.applyTile(tile, Tile.BRICK_BG, 0);
+                        break;
                 }
 
                 json.tiles[x][y] = tile;
