@@ -136,6 +136,11 @@ class User extends GameObject {
         ctx.restore();
     }
 
+    #updateMousePosition(events) {
+        this.#mousePosition = GridUI.toGridPosition(events.worldMousePosition).multiply(Tile.SIZE);
+        this.#updateHighlightedTiles();
+    }
+
     #fill() {
         const TARGET_TILE = Tile.getTileLayer(
             GameMap.getTile(this.#mousePosition.x, this.#mousePosition.y),

@@ -72,6 +72,8 @@ class Tile {
         } else if (tile >= 0) {
             return "tiles";
         }
+
+        throw new Error(`Unrecognized tile: ${tile}`);
     }
 
     static applyTile(base, tile, layer) {
