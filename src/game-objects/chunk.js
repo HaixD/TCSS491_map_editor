@@ -1,5 +1,5 @@
 /** @typedef {import("../engine/types/game-object")} */
-/** @typedef {import("./tile")} */
+/** @typedef {import("../tile")} */
 
 class Chunk extends GameObject {
     static TILE_SIZE = 16;
