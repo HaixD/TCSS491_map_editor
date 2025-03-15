@@ -19,8 +19,16 @@ class Vector {
                 this.y = arg1.y;
             }
         } else {
+            if (typeof arg1 !== "number") {
+                throw new Error("if 2 arguments are passed, they must be of type Number");
+            }
+
             this.x = arg1;
             this.y = arg2;
+        }
+
+        if (isNaN(this.x) || isNaN(this.y)) {
+            throw new Error(`NaN Vector value occurred`);
         }
     }
 
@@ -39,15 +47,9 @@ class Vector {
      * @returns {Vector} a new Vector object
      */
     add(arg1, arg2) {
-        if (arg2 === undefined) {
-            if (typeof arg1 === "number") {
-                return this.add(arg1, 0);
-            } else {
-                return this.add(arg1.x, arg1.y);
-            }
-        }
+        const { x, y } = new Vector(arg1, arg2);
 
-        return new Vector(this.x + arg1, this.y + arg2);
+        return new Vector(this.x + x, this.y + y);
     }
 
     /**
@@ -57,15 +59,20 @@ class Vector {
      * @returns {Vector} a new Vector object
      */
     subtract(arg1, arg2) {
-        if (arg2 === undefined) {
-            if (typeof arg1 === "number") {
-                return this.subtract(arg1, 0);
-            } else {
-                return this.subtract(arg1.x, arg1.y);
-            }
-        }
+        const { x, y } = new Vector(arg1, arg2);
 
-        return new Vector(this.x - arg1, this.y - arg2);
+        return new Vector(this.x - x, this.y - y);
+    }
+
+    /**
+     * Checks if this Vector equals the given Vector
+     * @param {Vector | number} arg1
+     * @param {number | undefined} arg2
+     */
+    equals(arg1, arg2) {
+        const { x, y } = new Vector(arg1, arg2);
+
+        return this.x === x && this.y === y;
     }
 
     /**

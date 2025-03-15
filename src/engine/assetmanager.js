@@ -1,6 +1,7 @@
 class AssetManager {
     /** @type {{[key: string]: HTMLAudioElement}} */
     static #audioData = {};
+
     /** @type {{[key: string]: HTMLImageElement}} */
     static #imageData = {};
 
@@ -13,21 +14,18 @@ class AssetManager {
      * @param {string} path
      * @returns {Promise<HTMLAudioElement> | HTMLAudioElement} a (loaded) Audio object
      */
-    static async getAudio(path) {
+    static getAudio(path) {
         if (AssetManager.#audioData[path] !== undefined) {
             return AssetManager.#audioData[path];
         }
 
-        let audio = new Audio();
-
         return new Promise((resolve, reject) => {
+            const audio = new Audio(path);
             audio.oncanplaythrough = () => {
                 AssetManager.#audioData[path] = audio;
                 resolve(audio);
             };
             audio.onerror = () => reject(`Could not load audio: ${path}`);
-
-            audio.src = path;
         });
     }
 
@@ -41,36 +39,15 @@ class AssetManager {
             return AssetManager.#imageData[path];
         }
 
-        let image = new Image();
+        const image = new Image();
 
         return new Promise((resolve, reject) => {
+            image.src = path;
             image.onload = () => {
                 AssetManager.#imageData[path] = image;
                 resolve(image);
             };
             image.onerror = () => reject(`Could not load image: ${path}`);
-
-            image.src = path;
         });
-    }
-
-    /**
-     * Sets the muted state of all Audio objects stored
-     * @param {boolean} mute
-     */
-    static muteAllAudio(mute) {
-        for (const audio of Object.values(AssetManager.#audioData)) {
-            audio.muted = mute;
-        }
-    }
-
-    /**
-     * Sets the volume of all Audio objects stored
-     * @param {number} volume
-     */
-    static setAllVolume(volume) {
-        for (const audio of Object.values(AssetManager.#audioData)) {
-            audio.volume = volume;
-        }
     }
 }

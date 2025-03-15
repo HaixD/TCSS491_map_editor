@@ -1,4 +1,5 @@
 /** @typedef {import("./tile")} */
+/** @typedef {import("../engine/types/vector")} */
 
 class GridUI extends GameObject {
     /**

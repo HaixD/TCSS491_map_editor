@@ -36,7 +36,7 @@ class PhysicsEntity {
             absVelocity.x > this.terminalVelocity.x
         ) {
             if (Math.abs(initialVelocity.x) < this.terminalVelocity.x) {
-                this.velocity.x = getDirection(this.velocity.x) * this.terminalVelocity.x;
+                this.velocity.x = Math.sign(this.velocity.x) * this.terminalVelocity.x;
             } else {
                 this.velocity.x = initialVelocity.x;
             }
@@ -46,7 +46,7 @@ class PhysicsEntity {
             absVelocity.y > this.terminalVelocity.y
         ) {
             if (Math.abs(initialVelocity.y) < this.terminalVelocity.y) {
-                this.velocity.y = getDirection(this.velocity.y) * this.terminalVelocity.y;
+                this.velocity.y = Math.sign(this.velocity.y) * this.terminalVelocity.y;
             } else {
                 this.velocity.y = initialVelocity.y;
             }
@@ -75,13 +75,13 @@ class PhysicsEntity {
         if (preTerminalVelocity.x > this.terminalVelocity.x) {
             const difference =
                 Math.min(terminalVelocity.x, preTerminalVelocity.x - this.terminalVelocity.x) *
-                -getDirection(this.velocity.x);
+                -Math.sign(this.velocity.x);
             this.velocity.x += difference;
         }
         if (preTerminalVelocity.y > this.terminalVelocity.y) {
             const difference =
                 Math.min(terminalVelocity.y, preTerminalVelocity.y - this.terminalVelocity.y) *
-                -getDirection(this.velocity.y);
+                -Math.sign(this.velocity.y);
             this.velocity.y += difference;
         }
 

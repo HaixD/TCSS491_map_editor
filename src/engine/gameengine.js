@@ -33,9 +33,6 @@ class GameEngine {
 
         GameEngine.#ctx.canvas.addEventListener("mousemove", e => {
             GameEngine.#inputEvents.canvasMousePosition.set(GameEngine.#processMouseEvent(e));
-            GameEngine.#inputEvents.worldMousePosition.set(
-                GameEngine.getActiveScene().getWorldVector(GameEngine.#processMouseEvent(e))
-            );
         });
         GameEngine.#ctx.canvas.addEventListener("click", e => {
             GameEngine.#inputEvents.leftClick = GameEngine.#processMouseEvent(e);
@@ -60,6 +57,12 @@ class GameEngine {
         GameEngine.#ctx.canvas.addEventListener("mouseup", e => {
             GameEngine.#inputEvents.mouseDown = e.buttons;
         });
+    }
+
+    static getWorldMousePosition() {
+        return GameEngine.getActiveScene().getWorldVector(
+            this.#inputEvents.canvasMousePosition.asVector()
+        );
     }
 
     static getActiveScene() {
@@ -127,14 +130,14 @@ class GameEngine {
      * Starts the game loop. If there is no active scene, the game loop will immediately end
      */
     static start() {
-        let lastTimestamp = Date.now();
+        let lastTimestamp = performance.now();
 
         const gameLoop = () => {
             if (GameEngine.#activeScene === "") {
                 return;
             }
 
-            const newTimestamp = Date.now();
+            const newTimestamp = performance.now();
             const deltaTime = Math.min((newTimestamp - lastTimestamp) / 1000, 0.16);
             lastTimestamp = newTimestamp;
 
@@ -152,9 +155,9 @@ class GameEngine {
 
             GameEngine.#inputEvents.reset();
 
-            window.requestAnimationFrame(gameLoop, GameEngine.#ctx.canvas);
+            window.requestAnimationFrame(gameLoop);
         };
 
-        gameLoop();
+        window.requestAnimationFrame(gameLoop);
     }
 }

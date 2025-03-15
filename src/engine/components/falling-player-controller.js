@@ -62,7 +62,7 @@ class FallingPlayerController extends PhysicsEntity {
      * @param {boolean | undefined} grounded whether the player is touching the ground
      */
     updateHorizontal(offset, grounded) {
-        const xDirection = getDirection(offset.x);
+        const xDirection = Math.sign(offset.x);
 
         if (grounded) {
             this.applyAcceleration(new Vector(xDirection * this.horizontalAcceleration));

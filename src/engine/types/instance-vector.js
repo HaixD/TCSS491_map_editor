@@ -17,20 +17,9 @@ class InstanceVector extends Vector {
      * @param {number | undefined} arg2
      */
     set(arg1, arg2) {
-        if (arg2 === undefined) {
-            if (typeof arg1 === "number") {
-                this.set(arg1, 0);
-            } else {
-                this.set(arg1.x, arg1.y);
-            }
-        } else {
-            if (isNaN(arg1) || isNaN(arg2)) {
-                throw new Error(`NaN Vector value occurred`);
-            }
-
-            this.x = arg1;
-            this.y = arg2;
-        }
+        const { x, y } = new Vector(arg1, arg2);
+        this.x = x;
+        this.y = y;
 
         return this;
     }
@@ -42,15 +31,7 @@ class InstanceVector extends Vector {
      * @param {number | undefined} arg2
      */
     add(arg1, arg2) {
-        if (arg2 === undefined) {
-            if (typeof arg1 === "number") {
-                this.add(arg1, 0);
-            } else {
-                this.add(arg1.x, arg1.y);
-            }
-        } else {
-            this.set(this.x + arg1, this.y + arg2);
-        }
+        this.set(super.add(arg1, arg2));
 
         return this;
     }
@@ -62,15 +43,7 @@ class InstanceVector extends Vector {
      * @param {number | undefined} arg2
      */
     subtract(arg1, arg2) {
-        if (arg2 === undefined) {
-            if (typeof arg1 === "number") {
-                this.subtract(arg1, 0);
-            } else {
-                this.subtract(arg1.x, arg1.y);
-            }
-        } else {
-            this.add(-arg1, -arg2);
-        }
+        this.set(super.subtract(arg1, arg2));
 
         return this;
     }
@@ -102,7 +75,7 @@ class InstanceVector extends Vector {
      * @param {(value: number) => number} transformation
      */
     map(transformation) {
-        return new InstanceVector(transformation(this.x), transformation(this.y));
+        return new InstanceVector(super.map(transformation));
     }
 
     /**
@@ -110,7 +83,7 @@ class InstanceVector extends Vector {
      * @param {(value: number) => number} transformation
      */
     forEach(transformation) {
-        this.set(transformation(this.x), transformation(this.y));
+        this.set(this.map(transformation));
 
         return this;
     }

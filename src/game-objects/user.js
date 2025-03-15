@@ -1,5 +1,6 @@
 /** @typedef {import("../engine/types/instance-vector")} */
 /** @typedef {import("../engine/types/game-object")} */
+/** @typedef {import("../engine/gameengine")} */
 /** @typedef {import("../gui")} */
 /** @typedef {import("./grid-ui")} */
 
@@ -59,8 +60,7 @@ class User extends GameObject {
 
         // move
         this.#lastMousePosition = this.#mousePosition;
-        this.#mousePosition = GridUI.toGridPosition(events.worldMousePosition).multiply(Tile.SIZE);
-        this.#updateHighlightedTiles();
+        this.#updateWorldMousePosition();
 
         if (events.mouseDown & 0b10) {
             // right down
@@ -120,7 +120,15 @@ class User extends GameObject {
             }
 
             GameEngine.getActiveScene().scale = User.SCALES[this.#scaleIndex];
+            this.#updateWorldMousePosition();
         }
+    }
+
+    #updateWorldMousePosition() {
+        this.#mousePosition = GridUI.toGridPosition(GameEngine.getWorldMousePosition()).multiply(
+            Tile.SIZE
+        );
+        this.#updateHighlightedTiles();
     }
 
     /**
@@ -134,11 +142,6 @@ class User extends GameObject {
         this.#drawHighlights(ctx);
 
         ctx.restore();
-    }
-
-    #updateMousePosition(events) {
-        this.#mousePosition = GridUI.toGridPosition(events.worldMousePosition).multiply(Tile.SIZE);
-        this.#updateHighlightedTiles();
     }
 
     #fill() {
